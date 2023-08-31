@@ -1,0 +1,25 @@
+# NOTE: mariadb-tempは、適当な名前に変えてからdocker composeしてください
+# NOTE: ポートフォワードの番号を適当な番号に変更してからdocker composeしてください
+
+services:
+  db:
+    image: mariadb:10.6.12
+    command: '--default-authentication-plugin=mysql_native_password'
+    container_name: 'mariadb-temp'
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 --password="root" --silent']
+      interval: 3s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - mariadb-temp:/var/lib/mysql
+      - ./Database:/docker-entrypoint-initdb.d
+    ports:
+      - 40000:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=temp
+
+volumes:
+  mariadb-temp:
